@@ -64,6 +64,21 @@
         </div>
       </div>
     </div>
+    
+<div class="card">
+  <h2>Sync / Backup</h2>
+  <p class="notice">Read‑only sync from <code>users.json</code> in your repo. To persist globally, export then commit <code>users.json</code> to the repo root.</p>
+  <div class="grid two">
+    <div><button id="btn-sync-remote" class="btn">Load users.json from repo</button></div>
+    <div><button id="btn-export-users" class="btn">Export local accounts → users.json</button></div>
+  </div>
+  <div style="margin-top:12px">
+    <label>Import users.json</label>
+    <input id="import-users-file" type="file" accept="application/json">
+    <button id="btn-import-users" class="btn" style="margin-top:8px">Import</button>
+  </div>
+</div>
+
     <div class="footer"><a href="cda-lookup.html">Open CDA Proficiency Point Lookup</a></div>
   </div>
 

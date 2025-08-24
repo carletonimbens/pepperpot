@@ -28,6 +28,44 @@ const COLOR_PALETTE = {
   "Gray": "#CED4DA"
 };
 
+// --- GitHub users.json bootstrap + export/import helpers ---
+async function fetchRepoUsers() {
+  try {
+    const resp = await fetch("users.json", { cache: "no-store" });
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    if (data && typeof data === "object") return data;
+  } catch (e) { /* ignore */ }
+  return null;
+}
+function mergeUsers(incoming) {
+  if (!incoming || typeof incoming !== "object") return 0;
+  const existing = getUsers();
+  let added = 0;
+  for (const [k, v] of Object.entries(incoming)) {
+    if (!existing[k]) { existing[k] = v; added += 1; }
+  }
+  setUsers(existing);
+  return added;
+}
+async function exportUsers() {
+  const data = JSON.stringify(getUsers(), null, 2);
+  const blob = new Blob([data], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "users.json";
+  document.body.appendChild(a);
+  a.click();
+  URL.revokeObjectURL(a.href);
+  a.remove();
+}
+async function importUsersFromFile(file) {
+  const text = await file.text();
+  const obj = JSON.parse(text);
+  return mergeUsers(obj);
+}
+
+
 const STYLE_LEVEL_ONLY = new Set(["Novice","Prechamp","Champ"]);
 const LEVEL_SYNONYMS = { prechamp: ["prechamp","pre-champ","pre champ","prechampionship"],
                          champ: ["champ","championship"] };
@@ -111,17 +149,19 @@ function loadThemeAndProfile(username=null) {
 /* =======================
    Shared UI helpers
 ======================= */
+
 function renderHeader(active="") {
   const user = getSessionUser();
-  const nav = [`<a href="index.html"${active==="home"?' style="outline: 2px solid var(--accent)"':''}>Home</a>`];
-  nav.push(`<a href="my-account.html"${active==="acct"?' style="outline: 2px solid var(--accent)"':''}>My Account</a>`);
-  nav.push(`<a href="cda-lookup.html"${active==="cda"?' style="outline: 2px solid var(--accent)"':''}>CDA Lookup</a>`);
-  const who = user ? `<span class="badge"><span class="dot" style="background:#4ade80"></span> ${user.id}</span>`
-                   : `<span class="badge"><span class="dot" style="background:#f87171"></span> Signed out</span>`;
+  fetchRepoUsers().then(db => { if (db) { const added = mergeUsers(db); if (added>0) toast(`Loaded ${added} account(s) from repo.`); }});
+  const nav = [`<a href="./index.html"${active==="home"?' style="outline: 2px solid var(--accent)"':''}>Home</a>`];
+  nav.push(`<a href="./my-account.html"${active==="acct"?' style="outline: 2px solid var(--accent)"':''}>My Account</a>`);
+  nav.push(`<a href="./cda-lookup.html"${active==="cda"?' style="outline: 2px solid var(--accent)"':''}>CDA Lookup</a>`);
+  const who = user ? `<span class="badge"><span class="dot" style="background:#22c55e"></span> ${user.id}</span>`
+                   : `<span class="badge"><span class="dot" style="background:#ef4444"></span> Signed out</span>`;
   return `
   <div class="header container">
     <div class="brand">
-      <img src="assets/pepperpot_wordmark.png" alt="Pepperpot" onerror="this.style.display='none'">
+      <img src="pepperpot_wordmark.png" alt="Pepperpot" onerror="this.src='assets/pepperpot_wordmark.png'; this.onerror=null;">
       <div>
         <div style="opacity:.85">Pepperpot</div>
         ${who}
@@ -132,6 +172,7 @@ function renderHeader(active="") {
 }
 
 function ensureLoggedIn(redirectIfMissing=false) {
+(redirectIfMissing=false) {
   const u = getSessionUser();
   if (!u && redirectIfMissing) { window.location.href = "index.html"; }
   return u;
@@ -143,6 +184,7 @@ function ensureLoggedIn(redirectIfMissing=false) {
 async function homeInit() {
   document.getElementById("mount-header").innerHTML = renderHeader("home");
   const user = getSessionUser();
+  fetchRepoUsers().then(db => { if (db) { const added = mergeUsers(db); if (added>0) toast(`Loaded ${added} account(s) from repo.`); }});
   const signed = document.getElementById("signed-in");
   const authWrap = document.getElementById("auth-wrap");
 
@@ -292,7 +334,25 @@ async function accountInit() {
     document.getElementById(id).addEventListener("change", () => showBanner(isDirty()));
   }
 
-  document.getElementById("btn-save").addEventListener("click", async () => {
+
+// Wire sync/backup controls if present
+const expBtn = document.getElementById("btn-export-users");
+const impFile = document.getElementById("import-users-file");
+const impBtn = document.getElementById("btn-import-users");
+const syncBtn = document.getElementById("btn-sync-remote");
+if (expBtn) expBtn.addEventListener("click", exportUsers);
+if (impBtn && impFile) impBtn.addEventListener("click", async () => {
+  if (!impFile.files || !impFile.files[0]) { toast("Choose a JSON file first.", true); return; }
+  try { const added = await importUsersFromFile(impFile.files[0]); toast(`Imported ${added} account(s).`); }
+  catch(e){ toast("Bad JSON file.", true); }
+});
+if (syncBtn) syncBtn.addEventListener("click", async () => {
+  const db = await fetchRepoUsers(); if (!db) { toast("No users.json in repo.", true); return; }
+  const added = mergeUsers(db); toast(`Loaded ${added} account(s) from repo.`);
+});
+
+document.getElementById("btn-save").addEventListener("click", async () => {
+
     // Save profile + theme
     const cur = snapshot();
     setPrefs(uid, cur);
@@ -464,6 +524,7 @@ function massageCsvData(results) {
 async function cdaInit() {
   document.getElementById("mount-header").innerHTML = renderHeader("cda");
   const user = getSessionUser();
+  fetchRepoUsers().then(db => { if (db) { const added = mergeUsers(db); if (added>0) toast(`Loaded ${added} account(s) from repo.`); }});
   const theme = loadThemeAndProfile(user ? user.id : null);
 
   // Wire up file controls
