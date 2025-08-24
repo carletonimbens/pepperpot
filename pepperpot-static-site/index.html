@@ -1,0 +1,60 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pepperpot</title>
+  <link rel="stylesheet" href="app.css">
+  <script defer src="app.js"></script>
+</head>
+<body onload="homeInit()">
+  <div id="mount-header"></div>
+  <div class="container">
+    <h1>Welcome</h1>
+
+    <div id="signed-in" class="card" style="display:none">
+      <p class="notice">Signed in as <strong id="signed-name"></strong>.</p>
+      <div class="grid two">
+        <a class="btn" href="my-account.html">👤 My Account</a>
+        <a class="btn" href="cda-lookup.html">📊 CDA Proficiency Point Lookup</a>
+      </div>
+      <div style="margin-top:14px">
+        <button class="btn warn" onclick="signOut()">Sign out</button>
+      </div>
+    </div>
+
+    <div id="auth-wrap" class="grid two">
+      <div class="card">
+        <h2>Create account</h2>
+        <label>Username (letters, numbers, underscores)</label>
+        <input id="su_user" type="text" placeholder="e.g., janedoe_42">
+        <label>Favorite dance (used for login)</label>
+        <select id="su_dance"></select>
+        <label>Favorite color (used for login)</label>
+        <select id="su_color"></select>
+        <div style="margin-top:12px">
+          <button id="btn-signup" class="btn success">Create account</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Log in</h2>
+        <label>Username</label>
+        <input id="lg_user" type="text" placeholder="Your username">
+        <label>Favorite dance</label>
+        <select id="lg_dance"></select>
+        <label>Favorite color</label>
+        <select id="lg_color"></select>
+        <div style="margin-top:12px">
+          <button id="btn-login" class="btn primary">Log in</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">Tip: your login is your username + your chosen dance + color.</div>
+  </div>
+
+  <div id="toast" style="display:none; position:fixed; bottom:20px; right:20px; padding:10px 14px; border-radius:10px; color:#fff; z-index:9999;"></div>
+</body>
+</html>

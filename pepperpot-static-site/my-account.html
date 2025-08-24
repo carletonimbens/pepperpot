@@ -1,0 +1,72 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pepperpot • My Account</title>
+  <link rel="stylesheet" href="app.css">
+  <script defer src="app.js"></script>
+</head>
+<body onload="accountInit()">
+  <div id="mount-header"></div>
+  <div id="unsaved-banner" class="unsaved-banner" style="display:none">Unsaved changes</div>
+
+  <div class="container">
+    <div id="need-login" class="notice warn" style="display:none">
+      Please sign in on the Home page first. <a href="index.html">⬅️ Go to Home</a>
+    </div>
+
+    <div id="account-wrap" class="grid two">
+      <div class="card">
+        <h2>Profile</h2>
+        <label>My Name</label>
+        <input id="display_name" type="text" placeholder="e.g., Jane Doe">
+      </div>
+
+      <div class="card">
+        <h2>Theme</h2>
+        <div class="grid two">
+          <div>
+            <label>≥ 7</label>
+            <input id="c1" type="color" value="#FFD1DC">
+          </div>
+          <div>
+            <label>Negative → X</label>
+            <input id="c2" type="color" value="#FFD8A8">
+          </div>
+          <div>
+            <label>1 – 6</label>
+            <input id="c3" type="color" value="#D3F9D8">
+          </div>
+          <div>
+            <label>Extra</label>
+            <input id="c4" type="color" value="#D0EBFF">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Login (Favorite dance + color)</h2>
+        <div class="grid two">
+          <div>
+            <label>Favorite dance</label>
+            <select id="login_dance"></select>
+          </div>
+          <div>
+            <label>Favorite color</label>
+            <select id="login_color"></select>
+            <div id="color_preview" style="width:72px;height:24px;border:1px solid #bbb;border-radius:6px;margin-top:8px;"></div>
+          </div>
+        </div>
+        <div style="margin-top:12px">
+          <button id="btn-save" class="btn success">Save changes</button>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><a href="cda-lookup.html">Open CDA Proficiency Point Lookup</a></div>
+  </div>
+
+  <div id="toast" style="display:none; position:fixed; bottom:20px; right:20px; padding:10px 14px; border-radius:10px; color:#fff; z-index:9999;"></div>
+</body>
+</html>
