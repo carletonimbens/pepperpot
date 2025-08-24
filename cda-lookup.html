@@ -23,10 +23,14 @@
           <input id="csv_upload" type="file" accept=".csv">
         </div>
         <div>
-          <label>Use local file (if present in repo): PPMid-March2025.csv</label>
+          <label>Use local file from this site</label>
           <div>
             <input id="use_default" type="checkbox">
-            <span style="margin-left:6px; color:var(--muted)">Enable to try fetching <code>PPMid-March2025.csv</code> from this site.</span>
+            <span style="margin-left:6px; color:var(--muted)">Fetch CSV by name from this site (same folder as this page).</span>
+            <div style="margin-top:8px">
+              <label>Local filename</label>
+              <input id="local_name" type="text" value="PPMid-March2025.csv" placeholder="e.g., PPMid-March2025.csv">
+            </div>
           </div>
         </div>
       </div>
